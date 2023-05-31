@@ -25,7 +25,7 @@ func {{nickname}}(c *gin.Context) {
 	_, _ = io.ReadAll(c.Request.Body)
 
 	{{/-first}}
-	paramValue = c.Query("{{parameterName}}")
+	paramValue = c.Param("{{parameterName}}")
 	expected = "{{parameterValue}}"
 
 	if(strings.EqualFold(strip(paramValue), strip(expected))) {
