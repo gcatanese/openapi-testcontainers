@@ -73,33 +73,6 @@ public class TestContainersCodegenTest {
     }
 
 
-
-    @Test
-    public void verifyGoMod() throws IOException {
-        File output = Files.createTempDirectory("test").toFile();
-        output.deleteOnExit();
-
-        final CodegenConfigurator configurator = new CodegenConfigurator()
-                .setGeneratorName("test-containers")
-                .setPackageName("my-package")
-                //.setInputSpec("src/test/resources/3_0/test-containers/sample.yaml")
-                .setInputSpec("/Users/beppecatanese/Data/source/github/gcatanese/tmp/testcont/TransferService-v3.yaml")
-                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
-
-        DefaultGenerator generator = new DefaultGenerator();
-        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
-        files.forEach(File::deleteOnExit);
-        files.forEach(System.out::println);
-
-        log(output + "/api/api_transactions.go");
-        TestUtils.assertFileExists(Paths.get(output + "/go.mod"));
-        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
-                "module github.com/my-user/my-repo");
-        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
-                "require github.com/gin-gonic/gin v1.9.0");
-
-    }
-
     private void log(String filename) throws IOException {
         System.out.println(new String(Files.readAllBytes(Paths.get(filename)), StandardCharsets.UTF_8));
     }
