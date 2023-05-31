@@ -1,5 +1,5 @@
 .idea
-.iml
+openapi-testcontainers.iml
 
 target
 LocalPostmanV2GeneratorTest.java
