@@ -1,0 +1,55 @@
+{{>partial_header}}
+package {{packageName}}
+
+{{#operations}}
+import (
+	"net/http"
+	"io"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+){{#operation}}
+
+// {{nickname}} - {{{summary}}}
+{{#isDeprecated}}
+// Deprecated
+{{/isDeprecated}}
+func {{nickname}}(c *gin.Context) {
+
+{{#vendorExtensions.items}}
+	{{^requestBody}}{{#-first}}
+	var paramValue string
+	var expected string
+
+	// avoid package imported but not used error
+	_, _ = io.ReadAll(c.Request.Body)
+
+	{{/-first}}
+	paramValue = c.Query("{{parameterName}}")
+	expected = "{{parameterValue}}"
+
+	if(strings.EqualFold(strip(paramValue), strip(expected))) {
+    	c.Data({{statusCode}}, "application/json", []byte(`{{{responseBody}}}`))
+    }
+	{{/requestBody}}
+	{{#requestBody}}{{#-first}}
+	var body []byte
+	var bodyAsString string
+	var expected string
+
+    {{/-first}}
+	// input
+	body, _ = io.ReadAll(c.Request.Body)
+	bodyAsString = string(body)
+	// output
+	expected = string([]byte(`{{{requestBody}}}`))
+
+	if(strings.EqualFold(strip(bodyAsString), strip(expected))) {
+		c.Data({{statusCode}}, "application/json", []byte(`{{{responseBody}}}`))
+	}
+	{{/requestBody}}
+
+{{/vendorExtensions.items}}
+	// fallback
+	c.JSON(http.StatusOK, gin.H{})
+}{{/operation}}{{/operations}}
