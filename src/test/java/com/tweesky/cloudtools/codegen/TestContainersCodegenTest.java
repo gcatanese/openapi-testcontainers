@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestContainersCodegenTest {
 
@@ -38,13 +39,40 @@ public class TestContainersCodegenTest {
         TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
                 "require github.com/gin-gonic/gin v1.9.0");
 
+        log(output + "/api/BasicApi.go");
+
+    }
+
+    @Test
+    public void generateByName() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("test-containers")
+                .setInputSpec("src/test/resources/test-containers/specByName.yaml")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        DefaultGenerator generator = new DefaultGenerator();
+        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
+        files.forEach(File::deleteOnExit);
+
+        TestUtils.assertFileExists(Paths.get(output + "/go.mod"));
+        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
+                "module github.com/testcontainers");
+        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
+                "require github.com/gin-gonic/gin v1.9.0");
+
+
+        log(output + "/api/BasicApi.go");
+
     }
 
     @Test
     public void extractExampleByName() {
         String str = "#/components/examples/get-user-basic";
 
-        assertEquals("get-user-basic", new TestContainersCodegen().extractExampleByName(str));
+        assertEquals("get-user-basic", new TestContainersCodegen().extractNameFromRef(str));
     }
 
     @Test
