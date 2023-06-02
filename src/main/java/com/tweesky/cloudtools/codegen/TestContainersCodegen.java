@@ -156,6 +156,9 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                 codegenOperation.vendorExtensions.put("items", items);
             }
 
+            // add default response
+            codegenOperation.vendorExtensions.put("fallback", getDefault(codegenOperation));
+
         }
         return objs;
     }
@@ -258,58 +261,77 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         List<Interaction> interactions = new ArrayList<>();
 
         if (!codegenOperation.getHasBodyParam()) {
-            // loop through parameters
-            for (CodegenParameter codegenParameter : codegenOperation.allParams) {
-                if (codegenParameter.examples != null) {
-                    for (Map.Entry<String, Example> entry : codegenParameter.examples.entrySet()) {
-
-                        Example requestExample = null;
-
-                        if (entry.getValue().getValue() != null) {
-                            requestExample = entry.getValue();
-                        }
-
-                        if (requestExample != null) {
-                            // found request example
-                            String requestExampleContractId = getContractId(requestExample);
-                            String requestExampleRef = entry.getValue().get$ref();
-
-                            // find by contractId
-                            InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
-                            if (responseItem != null) {
-                                // find by matching name
-                                responseItem = getInteractionResponseByRef(requestExampleRef);
-                            }
-                            if (responseItem != null) {
-                                // generate by schema
-                                responseItem = getInteractionResponseBySchema(codegenOperation);
-                            }
-
-                            if (responseItem != null) {
-                                // found response example
-                                Interaction item = new Interaction();
-                                item.setParameterName(codegenParameter.paramName);
-                                item.setParameterValue(String.valueOf(requestExample.getValue()));
-                                item.setStatusCode(responseItem.getStatusCode());
-                                item.setResponseBody(responseItem.getBody());
-                                item.setRequestExampleName(extractNameFromRef(requestExampleRef));
-                                item.setResponseExampleName(responseItem.getName());
-
-                                interactions.add(item);
-                            }
-                        }
-
-                    }
-                }
-            }
+            List<Interaction> interactionsFromParameters = getFromParameters(codegenOperation);
+            interactions.addAll(interactionsFromParameters);
 
         } else {
-            // loop through request examples
-            if (codegenOperation.bodyParam.getContent().get("application/json") != null &&
-                    codegenOperation.bodyParam.getContent().get("application/json").getExamples() != null) {
-                for (Map.Entry<String, Example> entry : codegenOperation.bodyParam.getContent().get("application/json").getExamples().entrySet()) {
+            List<Interaction> interactionsFromRequestExamples = getFromRequestExamples(codegenOperation);
+            interactions.addAll(interactionsFromRequestExamples);
+        }
 
-                    Example requestExample = getRequestExample(entry);
+        return interactions;
+    }
+
+    private List<Interaction> getFromRequestExamples(CodegenOperation codegenOperation) {
+
+        List<Interaction> interactions = new ArrayList<>();
+
+        // loop through request examples
+        if (codegenOperation.bodyParam.getContent().get("application/json") != null &&
+                codegenOperation.bodyParam.getContent().get("application/json").getExamples() != null) {
+            for (Map.Entry<String, Example> entry : codegenOperation.bodyParam.getContent().get("application/json").getExamples().entrySet()) {
+
+                Example requestExample = getRequestExample(entry);
+
+                if (requestExample != null) {
+                    // found request example
+                    String requestExampleContractId = getContractId(requestExample);
+                    String requestExampleRef = entry.getValue().get$ref();
+
+                    // find by contractId
+                    InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
+                    if (responseItem == null) {
+                        // find by matching name
+                        responseItem = getInteractionResponseByRef(requestExampleRef);
+                    }
+                    if (responseItem == null) {
+                        // generate from schema
+                        responseItem = getInteractionResponseBySchema(codegenOperation);
+                    }
+
+                    if (responseItem != null) {
+                        // found response example
+                        Interaction item = new Interaction();
+                        item.setRequestBody(getJsonFromExample(requestExample));
+                        item.setStatusCode(responseItem.getStatusCode());
+                        item.setResponseBody(responseItem.getBody());
+                        item.setRequestExampleName(extractNameFromRef(requestExampleRef));
+                        item.setResponseExampleName(responseItem.getName());
+
+                        interactions.add(item);
+                    }
+                }
+
+            }
+        }
+
+        return interactions;
+    }
+
+    private List<Interaction> getFromParameters(CodegenOperation codegenOperation) {
+
+        List<Interaction> interactions = new ArrayList<>();
+
+        for (CodegenParameter codegenParameter : codegenOperation.allParams) {
+            // loop through parameters
+            if (codegenParameter.examples != null) {
+                for (Map.Entry<String, Example> entry : codegenParameter.examples.entrySet()) {
+
+                    Example requestExample = null;
+
+                    if (entry.getValue().getValue() != null) {
+                        requestExample = entry.getValue();
+                    }
 
                     if (requestExample != null) {
                         // found request example
@@ -318,19 +340,20 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
 
                         // find by contractId
                         InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
-                        if (responseItem == null) {
+                        if (responseItem != null) {
                             // find by matching name
                             responseItem = getInteractionResponseByRef(requestExampleRef);
                         }
                         if (responseItem != null) {
-                            // generate from schema
+                            // generate by schema
                             responseItem = getInteractionResponseBySchema(codegenOperation);
                         }
 
                         if (responseItem != null) {
                             // found response example
                             Interaction item = new Interaction();
-                            item.setRequestBody(getJsonFromExample(requestExample));
+                            item.setParameterName(codegenParameter.paramName);
+                            item.setParameterValue(String.valueOf(requestExample.getValue()));
                             item.setStatusCode(responseItem.getStatusCode());
                             item.setResponseBody(responseItem.getBody());
                             item.setRequestExampleName(extractNameFromRef(requestExampleRef));
@@ -343,7 +366,25 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                 }
             }
         }
+
         return interactions;
+    }
+
+    private Interaction getDefault(CodegenOperation codegenOperation) {
+        Interaction interaction = new Interaction();
+
+        InteractionResponse interactionResponse = getInteractionResponseBySchema(codegenOperation);
+
+        if(interactionResponse != null) {
+            interaction.setStatusCode(interactionResponse.getStatusCode());
+            interaction.setResponseBody(interactionResponse.getBody());
+        } else {
+            // empty response body
+            interaction.setStatusCode("200");
+            interaction.setResponseBody("");
+        }
+
+        return interaction;
     }
 
     private Example getRequestExample(Map.Entry<String, Example> entry) {
@@ -379,7 +420,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         for (String code : codes) {
             for (Map.Entry<String, Example> entry : this.openAPI.getComponents().getExamples().entrySet()) {
                 String nameWithStatusCode = name + "-" + code;  // ie post-user-200
-                if( nameWithStatusCode.equalsIgnoreCase(entry.getKey())) {
+                if (nameWithStatusCode.equalsIgnoreCase(entry.getKey())) {
                     response = new InteractionResponse();
                     response.setName(nameWithStatusCode);
                     response.setBody(getJsonFromExample(entry.getValue()));
@@ -398,11 +439,11 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
 
         // loop through responses
         for (CodegenResponse codegenResponse : codegenOperation.responses) {
-            if(codegenResponse.code.equalsIgnoreCase("200")) {
+            if (codegenResponse.code.equalsIgnoreCase("200")) {
                 // generate from schema
-                if(codegenResponse.schema != null) {
+                if (codegenResponse.schema != null) {
                     Schema schema = (Schema) codegenResponse.schema;
-                    if(schema.get$ref() != null) {
+                    if (schema.get$ref() != null) {
                         schema = getSchemaByRef(schema.get$ref());
 
                         response = new InteractionResponse();
@@ -418,7 +459,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         return response;
     }
 
-        String getContractId(Example example) {
+    String getContractId(Example example) {
         String ret = null;
         if (example.getExtensions() != null
                 && example.getExtensions().get(contractIdExtension) != null) {
@@ -499,32 +540,6 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         return ret;
     }
 
-    // generate JSON (string) escaping and formatting
-//    String getJsonFromSchema(Schema schema) {
-//
-//        String ret = "{" + JSON_ESCAPE_NEW_LINE + " ";
-//
-//        int numVars = schema .vars.size();
-//        int counter = 1;
-//
-//        for (CodegenProperty codegenProperty : codegenParameter.vars) {
-//            ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + codegenProperty.baseName + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-//                    JSON_ESCAPE_DOUBLE_QUOTE + "<" + getPostmanType(codegenProperty) + ">" + JSON_ESCAPE_DOUBLE_QUOTE;
-//
-//            if(counter < numVars) {
-//                // add comma unless last attribute
-//                ret = ret + "," + JSON_ESCAPE_NEW_LINE + " ";
-//            }
-//            counter++;
-//
-//        }
-//
-//        ret = ret + JSON_ESCAPE_NEW_LINE + "}";
-//
-//        return ret;
-//    }
-
-
     // array of attributes from JSON payload (ignore commas within quotes)
     public String[] getAttributes(String json) {
         return json.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -586,7 +601,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                         JSON_ESCAPE_DOUBLE_QUOTE + value + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof StringSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "abcd" + JSON_ESCAPE_DOUBLE_QUOTE;
+                        JSON_ESCAPE_DOUBLE_QUOTE + "abcdefghijklmnopqrstuvwxyz" + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof Integer) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         value;
@@ -611,7 +626,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
 
             if (counter < numVars) {
                 // add comma unless last attribute
-                ret = ret + "," +  " ";
+                ret = ret + "," + " ";
             }
             counter++;
         }

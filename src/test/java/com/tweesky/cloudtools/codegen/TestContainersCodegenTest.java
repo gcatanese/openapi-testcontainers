@@ -80,8 +80,9 @@ public class TestContainersCodegenTest {
 
         log(output + "/api/BasicApi.go");
         TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
+        // check generated string value
         TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
-                "request: post-user response: post-user-200");
+                "\"abcdefghijklmnopqrstuvwxyz\"");
 
     }
 

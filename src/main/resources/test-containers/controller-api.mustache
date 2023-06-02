@@ -52,5 +52,5 @@ func {{nickname}}(c *gin.Context) {
 
 {{/vendorExtensions.items}}
 	// fallback
-	c.JSON(http.StatusOK, gin.H{})
+	c.Data({{vendorExtensions.fallback.statusCode}}, "application/json", []byte(`{{{vendorExtensions.fallback.responseBody}}}`))
 }{{/operation}}{{/operations}}
