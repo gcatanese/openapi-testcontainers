@@ -26,18 +26,16 @@ public class TestContainersCodegenTest {
 
         final CodegenConfigurator configurator = new CodegenConfigurator()
                 .setGeneratorName("test-containers")
-                .setInputSpec("src/test/resources/test-containers/sample.yaml")
+                .setInputSpec("src/test/resources/test-containers/specByContractId.yaml")
                 .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
 
         DefaultGenerator generator = new DefaultGenerator();
         List<File> files = generator.opts(configurator.toClientOptInput()).generate();
         files.forEach(File::deleteOnExit);
 
-        TestUtils.assertFileExists(Paths.get(output + "/go.mod"));
-        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
-                "module github.com/testcontainers");
-        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
-                "require github.com/gin-gonic/gin v1.9.0");
+        TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
+                "request: post-user-request-200 response: post-user-response-200");
 
         log(output + "/api/BasicApi.go");
 
@@ -57,14 +55,33 @@ public class TestContainersCodegenTest {
         List<File> files = generator.opts(configurator.toClientOptInput()).generate();
         files.forEach(File::deleteOnExit);
 
-        TestUtils.assertFileExists(Paths.get(output + "/go.mod"));
-        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
-                "module github.com/testcontainers");
-        TestUtils.assertFileContains(Paths.get(output + "/go.mod"),
-                "require github.com/gin-gonic/gin v1.9.0");
+        TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
+                "request: post-user response: post-user-200");
 
 
         log(output + "/api/BasicApi.go");
+
+    }
+
+    @Test
+    public void generateFromSchema() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("test-containers")
+                .setInputSpec("src/test/resources/test-containers/specNoExamples.yaml")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        DefaultGenerator generator = new DefaultGenerator();
+        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
+        files.forEach(File::deleteOnExit);
+
+        log(output + "/api/BasicApi.go");
+        TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
+                "request: post-user response: post-user-200");
 
     }
 

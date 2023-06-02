@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.models.examples.Example;
+import io.swagger.v3.oas.models.media.*;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.meta.GeneratorMetadata;
 import org.openapitools.codegen.meta.Stability;
@@ -51,7 +52,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
     protected String contractIdExtension = CONTRACT_ID_EXTENSION_DEFAULT_VALUE;
 
 
-    public static final String JSON_ESCAPE_DOUBLE_QUOTE = "";
+    public static final String JSON_ESCAPE_DOUBLE_QUOTE = "\"";
     public static final String JSON_ESCAPE_NEW_LINE = "";
 
     public TestContainersCodegen() {
@@ -281,7 +282,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                             }
                             if (responseItem != null) {
                                 // generate by schema
-                                responseItem = null;
+                                responseItem = getInteractionResponseBySchema(codegenOperation);
                             }
 
                             if (responseItem != null) {
@@ -321,9 +322,9 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                             // find by matching name
                             responseItem = getInteractionResponseByRef(requestExampleRef);
                         }
-                        if (responseItem == null) {
-                            // generate by schema
-                            responseItem = null;
+                        if (responseItem != null) {
+                            // generate from schema
+                            responseItem = getInteractionResponseBySchema(codegenOperation);
                         }
 
                         if (responseItem != null) {
@@ -363,6 +364,11 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         return this.openAPI.getComponents().getExamples().get(extractNameFromRef(ref));
     }
 
+    Schema getSchemaByRef(String ref) {
+        return this.openAPI.getComponents().getSchemas().get(extractNameFromRef(ref));
+    }
+
+
     InteractionResponse getInteractionResponseByRef(String ref) {
         InteractionResponse response = null;
 
@@ -386,7 +392,33 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         return response;
     }
 
-    String getContractId(Example example) {
+    // generate InteractionResponse from schema definition
+    InteractionResponse getInteractionResponseBySchema(CodegenOperation codegenOperation) {
+        InteractionResponse response = null;
+
+        // loop through responses
+        for (CodegenResponse codegenResponse : codegenOperation.responses) {
+            if(codegenResponse.code.equalsIgnoreCase("200")) {
+                // generate from schema
+                if(codegenResponse.schema != null) {
+                    Schema schema = (Schema) codegenResponse.schema;
+                    if(schema.get$ref() != null) {
+                        schema = getSchemaByRef(schema.get$ref());
+
+                        response = new InteractionResponse();
+                        response.setName("<schema>");
+                        response.setBody(convertToJson((LinkedHashMap<String, Object>) schema.getProperties()));
+                        response.setStatusCode(codegenResponse.code);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return response;
+    }
+
+        String getContractId(Example example) {
         String ret = null;
         if (example.getExtensions() != null
                 && example.getExtensions().get(contractIdExtension) != null) {
@@ -442,7 +474,8 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         return response;
 
     }
-    
+
+
     // Supporting helpers
 
     // from $ref: '#/components/examples/post-user' returns 'post-user'
@@ -466,6 +499,32 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
         return ret;
     }
 
+    // generate JSON (string) escaping and formatting
+//    String getJsonFromSchema(Schema schema) {
+//
+//        String ret = "{" + JSON_ESCAPE_NEW_LINE + " ";
+//
+//        int numVars = schema .vars.size();
+//        int counter = 1;
+//
+//        for (CodegenProperty codegenProperty : codegenParameter.vars) {
+//            ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + codegenProperty.baseName + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+//                    JSON_ESCAPE_DOUBLE_QUOTE + "<" + getPostmanType(codegenProperty) + ">" + JSON_ESCAPE_DOUBLE_QUOTE;
+//
+//            if(counter < numVars) {
+//                // add comma unless last attribute
+//                ret = ret + "," + JSON_ESCAPE_NEW_LINE + " ";
+//            }
+//            counter++;
+//
+//        }
+//
+//        ret = ret + JSON_ESCAPE_NEW_LINE + "}";
+//
+//        return ret;
+//    }
+
+
     // array of attributes from JSON payload (ignore commas within quotes)
     public String[] getAttributes(String json) {
         return json.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -477,9 +536,21 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
 
     // convert to JSON (string) escaping and formatting
     public String convertToJson(LinkedHashMap<String, Object> linkedHashMap) {
-        String ret = "";
+        String json = traverseMap(linkedHashMap, "");
 
-        return traverseMap(linkedHashMap, ret);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            JsonNode actualObj = objectMapper.readTree(json);
+            json = actualObj.toPrettyString();
+
+        } catch (JsonProcessingException e) {
+            LOGGER.warn("Error formatting JSON", e);
+            json = "";
+        }
+
+        return json;
+
     }
 
     public String formatJson(String json) {
@@ -501,7 +572,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
     // traverse recursively
     private String traverseMap(LinkedHashMap<String, Object> linkedHashMap, String ret) {
 
-        ret = ret + "{" + JSON_ESCAPE_NEW_LINE + " ";
+        ret = ret + "{" + " ";
 
         int numVars = linkedHashMap.entrySet().size();
         int counter = 1;
@@ -511,11 +582,26 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
             Object value = mapElement.getValue();
 
             if (value instanceof String) {
-                ret = ret + "\"" + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         JSON_ESCAPE_DOUBLE_QUOTE + value + JSON_ESCAPE_DOUBLE_QUOTE;
+            } else if (value instanceof StringSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        JSON_ESCAPE_DOUBLE_QUOTE + "abcd" + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof Integer) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         value;
+            } else if (value instanceof IntegerSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        "0";
+            } else if (value instanceof EmailSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        JSON_ESCAPE_DOUBLE_QUOTE + "user@example.com" + JSON_ESCAPE_DOUBLE_QUOTE;
+            } else if (value instanceof DateSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000" + JSON_ESCAPE_DOUBLE_QUOTE;
+            } else if (value instanceof BooleanSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        "true";
             } else if (value instanceof LinkedHashMap) {
                 String in = ret + "\"" + key + JSON_ESCAPE_DOUBLE_QUOTE + ": ";
                 ret = traverseMap(((LinkedHashMap<String, Object>) value), in);
@@ -525,7 +611,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
 
             if (counter < numVars) {
                 // add comma unless last attribute
-                ret = ret + "," + JSON_ESCAPE_NEW_LINE + " ";
+                ret = ret + "," +  " ";
             }
             counter++;
         }
