@@ -1,7 +1,5 @@
-FROM openjdk:17.0.2-jdk-slim
-
-ADD openapi/cli/openapi-generator-cli.jar /openapi/bin/openapi-generator-cli.jar
-ADD target/openapi-testcontainers.jar /openapi/bin/openapi-testcontainers.jar
+# stage 0: generate mock server code
+FROM gcatanese/openapi-testcontainers
 
 ARG openapifile=openapi/openapi.yaml
 ADD $openapifile /openapi/openapi.yaml
@@ -10,16 +8,20 @@ RUN java -cp /openapi/bin/openapi-testcontainers.jar:/openapi/bin/openapi-genera
   org.openapitools.codegen.OpenAPIGenerator generate -g com.tweesky.cloudtools.codegen.TestContainersCodegen \
    -i /openapi/openapi.yaml -o /openapi/go-server
 
-FROM golang:1.19
-WORKDIR /go/src
-COPY --from=0 /openapi/go-server .
+# stage 1: build Go executable
+FROM golang:1.19-alpine3.15
+COPY --from=0 /openapi/go-server ./go-server
 
+WORKDIR /go/go-server
 RUN go mod tidy
-RUN go build -o build .
 
-FROM ubuntu AS runtime
-ENV GIN_MODE=release
-COPY --from=1 /go/src/build /build
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /build .
 
-EXPOSE 8080/tcp
+# stage 2: build minimal image
+FROM scratch AS runtime
+
+COPY --from=1 /build .
+
+EXPOSE 8080
 ENTRYPOINT ["./build"]
+
