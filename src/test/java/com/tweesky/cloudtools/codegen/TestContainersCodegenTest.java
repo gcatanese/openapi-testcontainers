@@ -3,6 +3,11 @@ package com.tweesky.cloudtools.codegen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.EmailSchema;
+import io.swagger.v3.oas.models.media.IntegerSchema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.config.CodegenConfigurator;
 import org.testng.annotations.Test;
@@ -12,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -33,11 +39,12 @@ public class TestContainersCodegenTest {
         List<File> files = generator.opts(configurator.toClientOptInput()).generate();
         files.forEach(File::deleteOnExit);
 
-        TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
-        TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
-                "request: post-user-request-200 response: post-user-response-200");
+        TestUtils.assertFileContains(Paths.get(output + "/main.go"),
+                "package main");
 
-        log(output + "/api/BasicApi.go");
+        TestUtils.assertFileExists(Paths.get(output + "/api/api_basic.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
+                "request: post-user-request-200 response: post-user-response-200");
 
     }
 
@@ -54,13 +61,14 @@ public class TestContainersCodegenTest {
         DefaultGenerator generator = new DefaultGenerator();
         List<File> files = generator.opts(configurator.toClientOptInput()).generate();
         files.forEach(File::deleteOnExit);
+        files.forEach(System.out::println);
 
-        TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
-        TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
+        TestUtils.assertFileContains(Paths.get(output + "/main.go"),
+                "package main");
+
+        TestUtils.assertFileExists(Paths.get(output + "/api/api_basic.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
                 "request: post-user response: post-user-200");
-
-
-        log(output + "/api/BasicApi.go");
 
     }
 
@@ -78,10 +86,40 @@ public class TestContainersCodegenTest {
         List<File> files = generator.opts(configurator.toClientOptInput()).generate();
         files.forEach(File::deleteOnExit);
 
-        log(output + "/api/BasicApi.go");
-        TestUtils.assertFileExists(Paths.get(output + "/api/BasicApi.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/main.go"),
+                "package main");
+
+        log(output + "/api/api_basic.go");
+
+        TestUtils.assertFileExists(Paths.get(output + "/api/api_basic.go"));
         // check generated string value
-        TestUtils.assertFileContains(Paths.get(output + "/api/BasicApi.go"),
+        TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
+                "\"abcdefghijklmnopqrstuvwxyz\"");
+
+    }
+
+    @Test
+    public void getOperation() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("test-containers")
+                .setInputSpec("src/test/resources/test-containers/get-operation.yaml")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        DefaultGenerator generator = new DefaultGenerator();
+        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
+        files.forEach(File::deleteOnExit);
+
+        TestUtils.assertFileContains(Paths.get(output + "/main.go"),
+                "package main");
+
+        log(output + "/api/api_basic.go");
+
+        TestUtils.assertFileExists(Paths.get(output + "/api/api_basic.go"));
+        // check generated string value
+        TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
                 "\"abcdefghijklmnopqrstuvwxyz\"");
 
     }
@@ -116,6 +154,27 @@ public class TestContainersCodegenTest {
 
         assertEquals(EXPECTED, new TestContainersCodegen().convertToJson(city));
 
+    }
+
+    @Test
+    public void convertLinkedHashMapToJson() {
+        String EXPECTED = "{\n" +
+                "  \"key\" : \"abcdefghijklmnopqrstuvwxyz\",\n" +
+                "  \"key2\" : 0,\n" +
+                "  \"key3\" : \"user@example.com\",\n" +
+                "  \"key4\" : [ ]\n" +
+                "}";
+
+        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>(
+                ImmutableMap.of(
+                        "key", new StringSchema(),
+                        "key2", new IntegerSchema(),
+                        "key3", new EmailSchema(),
+                        "key4", new ArraySchema()
+                        ));
+
+        String json = new TestContainersCodegen().convertToJson(linkedHashMap);
+        assertEquals(EXPECTED, json);
     }
 
 
