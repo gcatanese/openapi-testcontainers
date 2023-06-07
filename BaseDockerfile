@@ -1,0 +1,9 @@
+#FROM openjdk:17.0.2-jdk-slim
+FROM openjdk:11
+
+ADD openapi/cli/openapi-generator-cli.jar /openapi/bin/openapi-generator-cli.jar
+ADD target/openapi-testcontainers.jar /openapi/bin/openapi-testcontainers.jar
+
+
+
+
