@@ -145,9 +145,10 @@ public class TestContainersCodegen extends AbstractGoCodegen {
         OperationMap operations = objs.getOperations();
         List<CodegenOperation> operationList = operations.getOperation();
 
-        List<Interaction> items = new ArrayList<>();
 
         for (CodegenOperation codegenOperation : operationList) {
+            List<Interaction> items = new ArrayList<>();
+
             if (codegenOperation.path != null) {
                 codegenOperation.path = codegenOperation.path.replaceAll("\\{(.*?)\\}", ":$1");
             }
@@ -289,12 +290,17 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                     // found request example
                     String requestExampleContractId = getContractId(requestExample);
                     String requestExampleRef = entry.getValue().get$ref();
+                    String requestExampleName = entry.getKey();
 
                     // find by contractId
                     InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
                     if (responseItem == null) {
                         // find by matching $ref
                         responseItem = getInteractionResponseByRef(requestExampleRef);
+                    }
+                    if(responseItem == null) {
+                        // find by matching example name
+                        responseItem = getInteractionResponseByName(codegenOperation, requestExampleName);
                     }
 
                     if (responseItem != null) {
@@ -306,7 +312,7 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                         if(requestExampleRef != null) {
                             item.setRequestExampleName(extractNameFromRef(requestExampleRef));
                         } else {
-                            item.setRequestExampleName("<inline>");
+                            item.setRequestExampleName(requestExampleName);
                         }
                         item.setResponseExampleName(responseItem.getName());
 
@@ -339,12 +345,17 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                         // found request example
                         String requestExampleContractId = getContractId(requestExample);
                         String requestExampleRef = entry.getValue().get$ref();
+                        String requestExampleName = entry.getKey();
 
                         // find by contractId
                         InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
                         if (responseItem == null) {
                             // find by matching $ref
                             responseItem = getInteractionResponseByRef(requestExampleRef);
+                        }
+                        if(responseItem == null) {
+                            // find by matching example name
+                            responseItem = getInteractionResponseByName(codegenOperation, requestExampleName);
                         }
 
                         if (responseItem != null) {
@@ -357,7 +368,7 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                             if(requestExampleRef != null) {
                                 item.setRequestExampleName(extractNameFromRef(requestExampleRef));
                             } else {
-                                item.setRequestExampleName("<none>");
+                                item.setRequestExampleName(requestExampleName);
                             }
                             item.setResponseExampleName(responseItem.getName());
 
@@ -519,6 +530,46 @@ public class TestContainersCodegen extends AbstractGoCodegen {
 
     }
 
+
+    InteractionResponse getInteractionResponseByName(CodegenOperation codegenOperation, String name) {
+
+        InteractionResponse response = null;
+
+        // loop through responses
+        for (CodegenResponse codegenResponse : codegenOperation.responses) {
+            if (codegenResponse.getContent() != null && codegenResponse.getContent().get("application/json") != null &&
+                    codegenResponse.getContent().get("application/json").getExamples() != null) {
+                for (Map.Entry<String, Example> respExample : codegenResponse.getContent().get("application/json").getExamples().entrySet()) {
+                    // loop through response examples
+                    if(respExample.getKey().equalsIgnoreCase(name)) {
+                        // found matching response example name
+                        Example e = null;
+                        String respExampleName = name;
+                        if (respExample.getValue().get$ref() != null) {
+                            // example by $ref
+                            e = getExampleByRef(respExample.getValue().get$ref());
+                        } else if (respExample.getValue() != null) {
+                            // inline example
+                            e = respExample.getValue();
+                        }
+
+                        if (e != null) {
+                            // found matching response example
+                            response = new InteractionResponse();
+                            response.setBody(getJsonFromExample(e));
+                            response.setName(respExampleName);
+                            response.setStatusCode(codegenResponse.code);
+                            break;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return response;
+
+    }
 
     // Supporting helpers
 

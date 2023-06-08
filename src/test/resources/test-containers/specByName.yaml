@@ -20,10 +20,10 @@ paths:
             type: string
             example: 888
           examples:
-            valid:
+            get-user-valid:
               value: 88
               summary: success 200
-            not found:
+            get-user-not-found:
               value: 99
               summary: error 404
 
@@ -34,28 +34,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-                example:
-                  id: schema-example
-                  firstName: Alice
-                  lastName: Smith333
-                  email: alice.smith@gmail.com
-                  dateOfBirth: '1997-10-31'
-                  emailVerified: true
-                  signUpDate: '2019-08-24'
               examples:
-                Get User Alice Smith:
+                get-user-valid:
                   value:
-                    id: 142
+                    id: 88
                     firstName: Alice
-                    lastName: Smith
-                    email: alice.smith@gmail.com
-                    dateOfBirth: '1997-10-31'
-                    emailVerified: true
-                    signUpDate: '2019-08-24'
-                Get User Phil Smith:
-                  value:
-                    id: 143
-                    firstName: Phil
                     lastName: Smith
                     email: alice.smith@gmail.com
                     dateOfBirth: '1997-10-31'
@@ -63,6 +46,13 @@ paths:
                     signUpDate: '2019-08-24'
         '404':
           description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                get-user-not-found:
+                    $ref: '#/components/examples/post-user-error'
 
   '/users':
     post:
@@ -73,14 +63,7 @@ paths:
           application/json:
             examples:
               basic:
-                $ref: '#/components/examples/post-user'
-                value: null
-              another:
-                $ref: '#/components/examples/post-user-another'
-                value: null
-              error 400:
-                $ref: '#/components/examples/post-user-error'
-                value: null
+                $ref: '#/components/examples/new-user'
             schema:
               $ref: '#/components/schemas/post-user-request'
         description: Post the necessary fields for the API to create a new user.
@@ -90,11 +73,9 @@ paths:
             application/json:
               examples:
                 basic:
-                  $ref: '#/components/examples/post-user-200'
-                  value: null
+                  $ref: '#/components/examples/success-new-user'
                 another:
-                  $ref: '#/components/examples/post-user-another-200'
-                  value: null
+                  $ref: '#/components/examples/response2'
               schema:
                 $ref: '#/components/schemas/User'
           description: User Created
@@ -199,7 +180,7 @@ components:
         - code
         - message
   examples:
-    post-user:
+    new-user:
       summary: Example request for POST with status 200
       value:
         firstName: Rosco
@@ -217,7 +198,7 @@ components:
         firstName:
         lastName:
         email: r.irvine@example.com
-    post-user-200:
+    success-new-user:
       summary: Example response for POST with status 200
       value:
         id: 0001
@@ -226,7 +207,7 @@ components:
         email: r.irvine@example.com
         emailVerified: false
         createDate: '2000-11-02'
-    post-user-another-200:
+    response2:
       summary: Another example response for POST with status 200
       value:
         id: 00002
