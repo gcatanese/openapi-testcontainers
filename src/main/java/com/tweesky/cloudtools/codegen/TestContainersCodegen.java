@@ -405,22 +405,24 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
     InteractionResponse getInteractionResponseByRef(String ref) {
         InteractionResponse response = null;
 
-        String name = extractNameFromRef(ref);
+        if(ref != null) {
+            String name = extractNameFromRef(ref);
 
-        String[] codes = {"200", "201", "400", "401", "403", "404", "422", "500"};
+            String[] codes = {"200", "201", "400", "401", "403", "404", "422", "500"};
 
-        for (String code : codes) {
-            for (Map.Entry<String, Example> entry : this.openAPI.getComponents().getExamples().entrySet()) {
-                String nameWithStatusCode = name + "-" + code;  // ie post-user-200
-                if (nameWithStatusCode.equalsIgnoreCase(entry.getKey())) {
-                    response = new InteractionResponse();
-                    response.setName(nameWithStatusCode);
-                    response.setBody(getJsonFromExample(entry.getValue()));
-                    response.setStatusCode(code);
-                    break;
+            for (String code : codes) {
+                for (Map.Entry<String, Example> entry : this.openAPI.getComponents().getExamples().entrySet()) {
+                    String nameWithStatusCode = name + "-" + code;  // ie post-user-200
+                    if (nameWithStatusCode.equalsIgnoreCase(entry.getKey())) {
+                        response = new InteractionResponse();
+                        response.setName(nameWithStatusCode);
+                        response.setBody(getJsonFromExample(entry.getValue()));
+                        response.setStatusCode(code);
+                        break;
+                    }
                 }
-            }
 
+            }
         }
         return response;
     }
