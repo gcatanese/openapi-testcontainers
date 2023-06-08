@@ -604,12 +604,33 @@ public class TestContainersCodegen extends AbstractGoCodegen {
             } else if (value instanceof EmailSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         JSON_ESCAPE_DOUBLE_QUOTE + "user@example.com" + JSON_ESCAPE_DOUBLE_QUOTE;
+            } else if (value instanceof Date) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000" + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof DateSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000" + JSON_ESCAPE_DOUBLE_QUOTE;
+            } else if (value instanceof DateTime) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000 h00:00:00" + JSON_ESCAPE_DOUBLE_QUOTE;
+            } else if (value instanceof DateTimeSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000 h00:00:00" + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof BooleanSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         "true";
+            } else if (value instanceof ArraySchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        "[]";
+            } else if (value instanceof Schema) {
+                String ref = ((Schema)value).get$ref();
+                Schema schema = getSchemaByRef(ref);
+                if(schema.getProperties() != null) {
+                    String in = ret + "\"" + key + JSON_ESCAPE_DOUBLE_QUOTE + ": ";
+                    ret = traverseMap(((LinkedHashMap<String, Object>) schema.getProperties()), in);
+                } else {
+                    ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": \"<none>\"";
+                }
             } else if (value instanceof LinkedHashMap) {
                 String in = ret + "\"" + key + JSON_ESCAPE_DOUBLE_QUOTE + ": ";
                 ret = traverseMap(((LinkedHashMap<String, Object>) value), in);
