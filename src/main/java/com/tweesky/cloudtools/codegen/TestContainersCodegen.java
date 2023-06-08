@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
-public class TestContainersCodegen extends DefaultCodegen implements CodegenConfig {
+public class TestContainersCodegen extends AbstractGoCodegen {
 
     private final Logger LOGGER = LoggerFactory.getLogger(TestContainersCodegen.class);
 
@@ -107,7 +107,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
          * Template Location.  This is the location which templates will be read from.  The generator
          * will use the resource stream to attempt to read the templates.
          */
-        templateDir = "test-containers";
+        embeddedTemplateDir = templateDir = "test-containers";
 
         /*
          * Reserved words.  Override this with reserved words specific to your language
