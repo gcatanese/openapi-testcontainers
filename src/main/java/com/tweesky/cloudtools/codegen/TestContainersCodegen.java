@@ -497,7 +497,6 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                                 response.setBody(getJsonFromExample(e));
                                 response.setName(respExampleName);
                                 response.setStatusCode(codegenResponse.code);
-                                LOGGER.info("Found example:" + e.getSummary() + " status:" + codegenResponse.code + "contractId: " + responseExampleContractId);
                                 break;
                             }
                         }
