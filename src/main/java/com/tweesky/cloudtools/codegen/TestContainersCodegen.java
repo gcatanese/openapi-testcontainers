@@ -552,7 +552,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
             JsonNode actualObj = objectMapper.readTree(json);
             json = actualObj.toPrettyString();
 
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             LOGGER.warn("Error formatting JSON", e);
             json = "";
         }
@@ -569,7 +569,7 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
             JsonNode actualObj = objectMapper.readTree(json);
             json = actualObj.toPrettyString();
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             LOGGER.warn("Error formatting JSON", e);
             json = "";
         }
