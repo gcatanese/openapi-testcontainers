@@ -291,12 +291,8 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
                     // find by contractId
                     InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
                     if (responseItem == null) {
-                        // find by matching name
+                        // find by matching $ref
                         responseItem = getInteractionResponseByRef(requestExampleRef);
-                    }
-                    if (responseItem == null) {
-                        // generate from schema
-                        responseItem = getInteractionResponseBySchema(codegenOperation);
                     }
 
                     if (responseItem != null) {
@@ -340,13 +336,9 @@ public class TestContainersCodegen extends DefaultCodegen implements CodegenConf
 
                         // find by contractId
                         InteractionResponse responseItem = getInteractionResponseByContractId(codegenOperation, requestExampleContractId);
-                        if (responseItem != null) {
-                            // find by matching name
+                        if (responseItem == null) {
+                            // find by matching $ref
                             responseItem = getInteractionResponseByRef(requestExampleRef);
-                        }
-                        if (responseItem != null) {
-                            // generate by schema
-                            responseItem = getInteractionResponseBySchema(codegenOperation);
                         }
 
                         if (responseItem != null) {
