@@ -301,7 +301,11 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                         item.setRequestBody(getJsonFromExample(requestExample));
                         item.setStatusCode(responseItem.getStatusCode());
                         item.setResponseBody(responseItem.getBody());
-                        item.setRequestExampleName(extractNameFromRef(requestExampleRef));
+                        if(requestExampleRef != null) {
+                            item.setRequestExampleName(extractNameFromRef(requestExampleRef));
+                        } else {
+                            item.setRequestExampleName("<inline>");
+                        }
                         item.setResponseExampleName(responseItem.getName());
 
                         interactions.add(item);
@@ -348,7 +352,11 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                             item.setParameterValue(String.valueOf(requestExample.getValue()));
                             item.setStatusCode(responseItem.getStatusCode());
                             item.setResponseBody(responseItem.getBody());
-                            item.setRequestExampleName(extractNameFromRef(requestExampleRef));
+                            if(requestExampleRef != null) {
+                                item.setRequestExampleName(extractNameFromRef(requestExampleRef));
+                            } else {
+                                item.setRequestExampleName("<none>");
+                            }
                             item.setResponseExampleName(responseItem.getName());
 
                             interactions.add(item);
