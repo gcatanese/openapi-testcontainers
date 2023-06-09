@@ -693,6 +693,12 @@ public class TestContainersCodegen extends AbstractGoCodegen {
             } else if (value instanceof ArraySchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         "[]";
+            } else if (value instanceof ByteArraySchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        "[]";
+            } else if (value instanceof MapSchema) {
+                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
+                        "[]";
             } else if (value instanceof Schema) {
                 String ref = ((Schema)value).get$ref();
                 Schema schema = getSchemaByRef(ref);
