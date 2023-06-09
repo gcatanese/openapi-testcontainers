@@ -2,6 +2,6 @@
 openapi-testcontainers.iml
 
 target
-LocalPostmanV2GeneratorTest.java
+LocalTestContainersCodegenTest.java
 .DS_Store
 output
