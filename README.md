@@ -14,7 +14,7 @@ The API container is loaded when the Junit tests start and can be used to test t
 
 Define Testcontainers [dependency](https://www.testcontainers.org/#prerequisites) 
 
-Create the rule to create the Docker container from your `myOpenapiFile.yaml`  
+Create the rule to create the Docker container from your own OpenAPI file (`myOpenapiFile.yaml`)  
 ```
     boolean deleteOnExit = false;
     
@@ -56,9 +56,12 @@ Run the mock server standalone
 docker build --build-arg openapifile=/path/to/myOpenapiFile.yaml -t openapi-testcontainers .
 
 docker run --rm -d -p 8080:8080 --name openapi-testcontainers-app openapi-testcontainers
+
 ```
-The API is reachable
+Access the API
 ```shell
-curl http://localhost
+curl http://localhost:8080/info
 ```
+
+
 
