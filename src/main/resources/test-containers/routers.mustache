@@ -44,17 +44,17 @@ func NewRouter() *gin.Engine {
 	return router
 }
 
-// Index is the index handler.
-func Index(c *gin.Context) {
-	c.String(http.StatusOK, "Hello World!")
+// Info
+func Info(c *gin.Context) {
+	c.String(http.StatusOK, "Built on {{{buildTimestamp}}}")
 }
 
 var routes = Routes{
 	{
-		"Index",
+		"Info",
 		http.MethodGet,
-		"{{{basePathWithoutHost}}}/",
-		Index,
+		"/info/",
+		Info,
 	},{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 
 	{

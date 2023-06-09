@@ -170,6 +170,8 @@ public class TestContainersCodegen extends AbstractGoCodegen {
     public void processOpts() {
         super.processOpts();
 
+        additionalProperties.put("buildTimestamp", getBuildTimestamp());
+
         /*
          * Additional Properties.  These values can be passed to the templates and
          * are available in models, apis, and supporting files
@@ -569,6 +571,12 @@ public class TestContainersCodegen extends AbstractGoCodegen {
 
         return response;
 
+    }
+
+    public String getBuildTimestamp() {
+        LocalDateTime timestamp = LocalDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return timestamp.format(format);
     }
 
     // Supporting helpers
