@@ -1,61 +1,64 @@
 # openapi-testcontainers
 
-Testcontainers module for OpenAPI
+Testcontainers module for OpenAPI: from an OpenAPI specification creates a [Testcontainers](https://www.testcontainers.org/) module to simplify ~~Integration~~ Contract Testing.
+
+Write your tests against the API specifications.
 
 ## Overview
 
-From an OpenAPI specification creates a Testcontainers module to simplify ~~Integration~~ Contract Testing.
+The OpenAPI Testcontainers extension allows developers to create on-the-fly a mock version of the API being tested.
+The API container is loaded when the Junit tests start and can be used to test the different endpoints and payloads.
+
 
 ## Usage
 
-* [Run with Docker](#run-with-docker)
-* [Build from source](#run-from-source)
+Define Testcontainers [dependency](https://www.testcontainers.org/#prerequisites) 
 
-### Run with Docker
+Create the rule to create the Docker container from your `myOpenapiFile.yaml`  
+```
+    boolean deleteOnExit = false;
+    
+    @Rule
+    public GenericContainer container = new GenericContainer(
+            new ImageFromDockerfile("my-test-container", deleteOnExit)
+                    .withFileFromFile("openapi.yaml", new File("myOpenapiFile.yaml"))
+                    .withFileFromFile("Dockerfile", new File("Dockerfile"))
+    )
+            .withExposedPorts(8080);
 
-Run with the pre-built image passing `-i` inputspec (path of the OpenAPI spec file) and `-o` output dir (location
-of the generated file i.e ./postman/gen).
+```
+Write your tests
+```
+@Test
+    public void testGet() throws Exception {
 
-It supports the following commands:
-* `generate`: create the postman.json file
-* `push`: create postman.json and push to your postman.com default `My Workspace`.
-  This uses the [Postman API](https://www.postman.com/postman/workspace/postman-public-workspace/folder/12959542-c705956d-1005-4fbc-803c-b6b985242a85?ctx=documentation)
-  and requires a valid API key from Postman's integrations [dashboard](https://web.postman.co/settings/me/api-keys).
+        var client = HttpClient.newHttpClient();
+        
+        // test /users/1000
+        var uri = "http://" + container.getHost() + ":" + container.getFirstMappedPort() + "/users/1000";
+
+        var request = HttpRequest.newBuilder(URI.create(uri))
+                .header("accept", "application/json").GET().build();
+        var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode());
+    }
+
+```
+
+## How it works
+
+## Standalone mock
+
+Run the mock server standalone
 
 ```docker
-# generate only
-docker run -v $(pwd):/usr/src/app \
-   -it --rm --name postmanv2-container gcatanese/openapi-generator-postman-v2 generate \
-   -i src/test/resources/SampleProject.yaml \
-   -o tmp 
+docker build --build-arg openapifile=/path/to/myOpenapiFile.yaml -t openapi-testcontainers .
 
-# generate only (with additional parameters)
-docker run -v $(pwd):/usr/src/app \
-   -it --rm --name postmanv2-container gcatanese/openapi-generator-postman-v2 generate \
-   -i src/test/resources/SampleProject.yaml \
-   -o tmp \
-   --additional-properties folderStrategy=Tags,postmanVariables=MY_VAR1-ANOTHERVAR
-
-
-# generate and push to Postman.com
-# note: require POSTMAN API KEY
-docker run -v $(pwd):/usr/src/app \
-   -e POSTMAN_API_KEY=YOUR_POSTMAN_API_KEY \
-   -it --rm --name postmanv2-container gcatanese/openapi-generator-postman-v2 push \
-   -i src/test/resources/SampleProject.yaml \
-   -o tmp \
-   --additional-properties folderStrategy=Tags,postmanVariables=MY_VAR1-ANOTHERVAR      
+docker run --rm -d -p 8080:8080 --name openapi-testcontainers-app openapi-testcontainers
 ```
-
-### Run from source
-
-Clone and build [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) CLI
-
-Build `postman-v2` from source
-
-Run OpenAPI Generator adding `postman-v2` jar file in the class path and specifying the `PostmanV2Generator` generator:
+The API is reachable
 ```shell
-java -cp target/openapi-generator-postman-v2.jar:/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar \
-  org.openapitools.codegen.OpenAPIGenerator generate -g com.tweesky.cloudtools.codegen.PostmanV2Generator \
-  -i src/test/resources/BasicJson.json -o output
+curl http://localhost
 ```
+
