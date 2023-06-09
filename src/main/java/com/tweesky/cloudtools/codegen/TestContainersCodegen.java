@@ -55,7 +55,6 @@ public class TestContainersCodegen extends AbstractGoCodegen {
 
     protected String contractIdExtension = CONTRACT_ID_EXTENSION_DEFAULT_VALUE;
 
-
     public static final String JSON_ESCAPE_DOUBLE_QUOTE = "\"";
     public static final String JSON_ESCAPE_NEW_LINE = "";
 
