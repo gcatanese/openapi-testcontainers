@@ -48,6 +48,23 @@ Write your tests
 
 ## How it works
 
+The module uses the [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) to genereate a lightweight 
+mock server based on the OpenAPI specification. The request and response examples are found and matched to define the 
+interactions (contract) between the consumer and the producer of the API.  
+
+The following strategies are applied (in order) to match requests with responses:
+* **match by Contract tag**: do requests and examples use the vendor extension `x-contract-id`? In this case match a request with a response example that has the same value
+* **match by Ref name**: match `$ref` request example with a corresponding `$ref` response example, for example 
+`create-users-example` would match `create-users-example-200` to define a successful `200` scenario
+* **match by Example name**: find request and response examples that have the same name
+* **generate from Schema**: fallback strategy (when no matching has been found): generate the response from the Schema and
+ensure every request has at least a response.
+
+Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
+to understand challenges and solutions of Contract Testing with the OpenAPI standard.
+
+
+
 ## Standalone mock
 
 Run the mock server standalone
@@ -58,9 +75,9 @@ docker build --build-arg openapifile=/path/to/myOpenapiFile.yaml -t openapi-test
 docker run --rm -d -p 8080:8080 --name openapi-testcontainers-app openapi-testcontainers
 
 ```
-Access the API
+Access the index page
 ```shell
-curl http://localhost:8080/info
+curl http://localhost:8080/index/
 ```
 
 
