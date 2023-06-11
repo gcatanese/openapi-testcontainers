@@ -205,11 +205,17 @@ public class TestContainersCodegenTest {
         assertEquals(EXPECTED, json);
     }
 
+    @Test
+    public void getInputSpecFilename() {
+
+        String INPUT_SPEC = "/dir/subdir/myopenapi.yaml";
+        String EXPECTED = "myopenapi.yaml";
+        assertEquals(EXPECTED, new TestContainersCodegen().getInputSpecFilename(INPUT_SPEC));
+    }
+
 
     private void log(String filename) throws IOException {
         System.out.println(new String(Files.readAllBytes(Paths.get(filename)), StandardCharsets.UTF_8));
     }
-
-
 
 }

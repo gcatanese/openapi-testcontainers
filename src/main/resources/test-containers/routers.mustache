@@ -55,14 +55,30 @@ func Index(c *gin.Context) {
 	)
 }
 
+// OpenApi handler
+func OpenApi(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"openapi.html",
+		gin.H{
+			"title": "OpenAPI Testcontainers",
+		},
+	)
+}
+
 var routes = Routes{
 	{
 		"Index",
 		http.MethodGet,
 		"/index/",
 		Index,
+	},
+	{
+		"OpenApi",
+		http.MethodGet,
+		"/openapi/",
+		OpenApi,
 	},{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
-
 	{
 		"{{operationId}}",
 		http.Method{{httpMethod}},

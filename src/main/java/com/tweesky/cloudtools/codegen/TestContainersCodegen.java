@@ -172,6 +172,7 @@ public class TestContainersCodegen extends AbstractGoCodegen {
         super.processOpts();
 
         additionalProperties.put("buildTimestamp", getBuildTimestamp());
+        additionalProperties.put("specFile", getInputSpecFilename(inputSpec));
 
         /*
          * Additional Properties.  These values can be passed to the templates and
@@ -196,14 +197,14 @@ public class TestContainersCodegen extends AbstractGoCodegen {
          * entire object tree available.  If the input file has a suffix of `.mustache
          * it will be processed by the template engine.  Otherwise, it will be copied
          */
-        supportingFiles.add(new SupportingFile("openapi.mustache", "api", "openapi.yaml"));
         supportingFiles.add(new SupportingFile("main.mustache", "", "main.go"));
         supportingFiles.add(new SupportingFile("Dockerfile.mustache", "", "Dockerfile"));
         supportingFiles.add(new SupportingFile("routers.mustache", apiPath, "routers.go"));
         supportingFiles.add(new SupportingFile("README.mustache", apiPath, "README.md")
                 .doNotOverwrite());
         supportingFiles.add(new SupportingFile("go.mod.mustache", "go.mod"));
-        supportingFiles.add(new SupportingFile("templates/index.mustache", "", "templates/index.html"));
+        supportingFiles.add(new SupportingFile("templates/index.mustache", "templates", "index.html"));
+        supportingFiles.add(new SupportingFile("templates/openapi.mustache", "templates", "openapi.html"));
     }
 
 
@@ -725,6 +726,10 @@ public class TestContainersCodegen extends AbstractGoCodegen {
         ret = ret + JSON_ESCAPE_NEW_LINE + "}";
 
         return ret;
+    }
+
+    public String getInputSpecFilename(String inputSpec) {
+        return inputSpec.substring(inputSpec.lastIndexOf("/") + 1);
     }
 
     // Interaction between consumer and provider
