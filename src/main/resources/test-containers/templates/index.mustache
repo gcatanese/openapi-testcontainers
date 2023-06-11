@@ -1,0 +1,16 @@
+<html lang="en">
+ <head>
+    <meta charset="UTF-8" />
+    <title>{{ .title }}</title>
+ </head>
+
+ <body>
+
+  Generated on {{{buildTimestamp}}}
+  <br/><br/>
+
+{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
+   <div>{{{path}}} ({{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}})</div>
+{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
+ </body>
+</html>

@@ -203,6 +203,7 @@ public class TestContainersCodegen extends AbstractGoCodegen {
         supportingFiles.add(new SupportingFile("README.mustache", apiPath, "README.md")
                 .doNotOverwrite());
         supportingFiles.add(new SupportingFile("go.mod.mustache", "go.mod"));
+        supportingFiles.add(new SupportingFile("templates/index.mustache", "", "templates/index.html"));
     }
 
 
@@ -825,6 +826,7 @@ public class TestContainersCodegen extends AbstractGoCodegen {
             this.name = name;
         }
     }
+
 
 }
 

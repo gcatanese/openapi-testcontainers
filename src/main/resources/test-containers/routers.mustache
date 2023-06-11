@@ -44,17 +44,23 @@ func NewRouter() *gin.Engine {
 	return router
 }
 
-// Info
-func Info(c *gin.Context) {
-	c.String(http.StatusOK, "Built on {{{buildTimestamp}}}")
+// Index handler
+func Index(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"index.html",
+		gin.H{
+			"title": "OpenAPI Testcontainers",
+		},
+	)
 }
 
 var routes = Routes{
 	{
-		"Info",
+		"Index",
 		http.MethodGet,
-		"/info/",
-		Info,
+		"/index/",
+		Index,
 	},{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 
 	{
