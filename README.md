@@ -14,7 +14,7 @@ The API container is loaded when the Junit tests start and can be used to test t
 
 Define Testcontainers [dependency](https://www.testcontainers.org/#prerequisites) 
 
-Create the rule to create the Docker container from your own OpenAPI file (`myOpenapiFile.yaml`)  
+Add the rule to create the Docker container from your own OpenAPI file (`myOpenapiFile.yaml`)  
 ```
     boolean deleteOnExit = false;
     
@@ -29,7 +29,7 @@ Create the rule to create the Docker container from your own OpenAPI file (`myOp
 ```
 Write your tests
 ```
-@Test
+    @Test
     public void testGet() throws Exception {
 
         var client = HttpClient.newHttpClient();
@@ -57,7 +57,7 @@ The following strategies are applied (in order) to match requests with responses
 * **match by Ref name**: match `$ref` request example with a corresponding `$ref` response example, for example 
 `create-users-example` would match `create-users-example-200` to define a successful `200` scenario
 * **match by Example name**: find request and response examples that have the same name
-* **generate from Schema**: fallback strategy (when no matching has been found): generate the response from the Schema and
+* **generate from Schema**: fallback strategy (when no matching is found): generate the response from the Schema and
 ensure every request has at least a response.
 
 Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
