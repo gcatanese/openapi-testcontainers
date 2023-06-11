@@ -2,11 +2,11 @@
 FROM gcatanese/openapi-testcontainers
 
 ARG openapifile=openapi/openapi.yaml
-ADD $openapifile /openapi/openapi.yaml
+ADD $openapifile /openapi/$openapifile
 
 RUN java -cp /openapi/bin/openapi-testcontainers.jar:/openapi/bin/openapi-generator-cli.jar \
   org.openapitools.codegen.OpenAPIGenerator generate -g com.tweesky.cloudtools.codegen.TestContainersCodegen \
-   -i /openapi/openapi.yaml -o /openapi/go-server
+   -i /openapi/$openapifile -o /openapi/go-server
 
 # stage 1: build Go executable
 FROM golang:1.19-alpine3.15
