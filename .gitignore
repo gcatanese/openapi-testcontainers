@@ -1,6 +1,6 @@
 .idea
 openapi-testcontainers.iml
-
+openapi/tmp
 target
 LocalTestContainersCodegenTest.java
 .DS_Store
