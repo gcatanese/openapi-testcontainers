@@ -15,13 +15,14 @@ import (
 {{/isDeprecated}}
 func {{nickname}}(c *gin.Context) {
 
+	// avoid package imported but not used error
+	_, _ = io.ReadAll(c.Request.Body)
+	_ = strings.ToUpper("noop")
+
 {{#vendorExtensions.items}}
 	{{^requestBody}}{{#-first}}
 	var paramValue string
 	var expected string
-
-	// avoid package imported but not used error
-	_, _ = io.ReadAll(c.Request.Body)
 
 	{{/-first}}
 	paramValue = c.Param("{{parameterName}}")
