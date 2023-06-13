@@ -105,7 +105,7 @@ public class TestContainersCodegenTest {
 
         final CodegenConfigurator configurator = new CodegenConfigurator()
                 .setGeneratorName("test-containers")
-                .setInputSpec("src/test/resources/test-containers/get-operation.yaml")
+                .setInputSpec("src/test/resources/test-containers/specs-no-examples.yaml")
                 .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
 
         DefaultGenerator generator = new DefaultGenerator();
@@ -149,6 +149,31 @@ public class TestContainersCodegenTest {
 
         TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
                 "// request: new-user response: basic");
+    }
+
+    @Test
+    public void generateGetExample() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("test-containers")
+                .setInputSpec("src/test/resources/test-containers/get-example.yaml")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        DefaultGenerator generator = new DefaultGenerator();
+        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
+        files.forEach(File::deleteOnExit);
+
+        log(output + "/api/api_basic.go");
+
+        TestUtils.assertFileContains(Paths.get(output + "/main.go"),
+                "package main");
+
+        TestUtils.assertFileExists(Paths.get(output + "/api/api_basic.go"));
+        TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
+                "request: valid response: get-user-id-0001");
+
     }
 
 
