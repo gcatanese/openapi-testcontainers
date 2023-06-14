@@ -15,8 +15,8 @@ import (
 {{/isDeprecated}}
 func {{nickname}}(c *gin.Context) {
 
-	// avoid package imported but not used error
-	_, _ = io.ReadAll(c.Request.Body)
+	// avoid package imported but not used error (ignore code)
+	_, _ = ioutil.ReadFile("noop")
 	_ = strings.ToUpper("noop")
 
 {{#vendorExtensions.items}}
