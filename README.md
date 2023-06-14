@@ -1,4 +1,4 @@
-# openapi-testcontainers
+# OpenAPI Testcontainers
 
 Testcontainers module for OpenAPI: from an OpenAPI specification creates a [Testcontainers](https://www.testcontainers.org/) module to simplify ~~Integration~~ Contract Testing.
 
