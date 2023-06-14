@@ -3,7 +3,7 @@ package {{packageName}}
 
 {{#operations}}
 import (
-	"io"
+	"io/ioutil"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -31,23 +31,29 @@ func {{nickname}}(c *gin.Context) {
     // request: {{{requestExampleName}}} response: {{{responseExampleName}}}
 	if(strings.EqualFold(strip(paramValue), strip(expected))) {
     	c.Data({{statusCode}}, "application/json", []byte(`{{{responseBody}}}`))
+
+    	return
     }
 	{{/requestBody}}
 	{{#requestBody}}{{#-first}}
 	var body []byte
-	var bodyAsString string
-	var expected string
+	var expected []byte
+	var eq bool
 
     {{/-first}}
-	// input
-	body, _ = io.ReadAll(c.Request.Body)
-	bodyAsString = string(body)
-	// output
-	expected = string([]byte(`{{{requestBody}}}`))
+	// input (payload request body)
+	body, _ = ioutil.ReadAll(c.Request.Body)
+
+	// expected output
+	expected = []byte(`{{{requestBody}}}`)
+
+	eq, _ = JSONBytesEqual(body, expected)
 
     // request: {{{requestExampleName}}} response: {{{responseExampleName}}}
-	if(strings.EqualFold(strip(bodyAsString), strip(expected))) {
+	if(eq) {
 		c.Data({{statusCode}}, "application/json", []byte(`{{{responseBody}}}`))
+
+		return
 	}
 	{{/requestBody}}
 
@@ -55,3 +61,5 @@ func {{nickname}}(c *gin.Context) {
 	// fallback
 	c.Data({{vendorExtensions.fallback.statusCode}}, "application/json", []byte(`{{{vendorExtensions.fallback.responseBody}}}`))
 }{{/operation}}{{/operations}}
+
+

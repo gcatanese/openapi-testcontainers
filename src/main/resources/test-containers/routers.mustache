@@ -2,8 +2,11 @@
 package {{packageName}}
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 )
@@ -95,4 +98,18 @@ func strip(str string) string {
 
 	return str
 }
+
+func JSONBytesEqual(a, b []byte) (bool, error) {
+  var j, j2 interface{}
+  if err := json.Unmarshal(a, &j); err != nil {
+      log.Println(err, a)
+      return false, err
+  }
+  if err := json.Unmarshal(b, &j2); err != nil {
+    log.Println(err, b)
+    return false, err
+  }
+  return reflect.DeepEqual(j2, j), nil
+}
+
 
