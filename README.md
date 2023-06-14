@@ -2,7 +2,7 @@
 
 Testcontainers module for OpenAPI: from an OpenAPI specification creates a [Testcontainers](https://www.testcontainers.org/) module to simplify ~~Integration~~ Contract Testing.
 
-Write your tests against the API specifications.
+Write your tests against the API specifications (check the [sample](https://github.com/gcatanese/openapi-testcontainers-demo)).
 
 ## Overview
 
