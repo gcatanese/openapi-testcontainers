@@ -6,8 +6,8 @@ Write your tests against the API specifications (check the [sample](https://gith
 
 ## Overview
 
-The OpenAPI Testcontainers extension allows developers to create on-the-fly a mock version of the API being tested.
-The API container is loaded when the Junit tests start and can be used to test the different endpoints and payloads.
+The OpenAPI Testcontainers extension allows developers to create on-the-fly a lightweight instance of the API consumed by the application.
+The API container is loaded when the Junit tests start and can be used to mock the different endpoints and payloads.
 
 
 ## Usage
