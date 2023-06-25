@@ -80,5 +80,13 @@ Access the index page
 curl http://localhost:8080/index/
 ```
 
+### Mock server browser
+
+The `index` page provides a view of the contract interactions, making clear the expectations.
+Check it out.
+
+![Mock server browser](mock-server.png)
+
+
 
 
