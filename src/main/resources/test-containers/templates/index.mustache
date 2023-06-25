@@ -71,8 +71,8 @@
             {{#requestBody}}
                 <li><span class="caret">WHEN (given this request)</span>
                     <ul class="nested">
-                    <li><div class="jsonpayload"><pre>
-                    {{{requestBody}}}
+                    <li><div class="jsonpayload"><pre id="json">
+{{{requestBody}}}
                     </pre></div></li>
                     </ul>
                 </li>
@@ -80,7 +80,7 @@
                 <li><span class="caret">THEN (get this response)</span>
                     <ul class="nested">
                     <li><div class="jsonpayload"><pre>
-                    {{{responseBody}}}
+{{{responseBody}}}
                     </pre></div></li>
                     </ul>
                 </li>
@@ -93,7 +93,7 @@
            <li><span class="caret">Fallback (any other request)</span>
                     <ul class="nested">
                     <li><div class="jsonpayload"><pre>
-                    {{{vendorExtensions.fallback.responseBody}}}
+{{{vendorExtensions.fallback.responseBody}}}
                     </pre></div></li>
                     </ul>
            </li>
