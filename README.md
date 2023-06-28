@@ -15,7 +15,7 @@ The API container is loaded when the Junit tests start and can be used to mock t
 Define Testcontainers [dependency](https://www.testcontainers.org/#prerequisites) 
 
 Add the rule to create the Docker container from your own OpenAPI file (`myOpenapiFile.yaml`)  
-```
+```java
     boolean deleteOnExit = false;
     
     @Rule
@@ -28,7 +28,7 @@ Add the rule to create the Docker container from your own OpenAPI file (`myOpena
 
 ```
 Write your tests
-```
+```java
     @Test
     public void testGet() throws Exception {
 
