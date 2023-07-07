@@ -67,26 +67,4 @@ to understand challenges and solutions of Contract Testing with the OpenAPI stan
 
 ## Standalone mock
 
-Run the mock server standalone
-
-```docker
-docker build --build-arg openapifile=/path/to/myOpenapiFile.yaml -t openapi-testcontainers .
-
-docker run --rm -d -p 8080:8080 --name openapi-testcontainers-app openapi-testcontainers
-
-```
-Access the index page
-```shell
-curl http://localhost:8080/index/
-```
-
-### Mock server browser
-
-The `index` page provides a view of the contract interactions, making clear the expectations.
-Check it out.
-
-![Mock server browser](mock-server.png)
-
-
-
-
+Run the mock server [standalone](OpenAPI-mock-server.md).
