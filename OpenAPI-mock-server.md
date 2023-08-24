@@ -1,6 +1,6 @@
 # OpenAPI Native Mock Server
 
-Within the TestContainer run an **OpenAPI native mock server**. For each API call executed by your code
+The TestContainer extension runs an **OpenAPI native mock server**. For each API call executed by your code
 a given (mock) response is provided.  
 Why native? Because the request-response interactions are defined within the OpenAPI specification, without
 the need of any additional application or storage (and therefore complexity).
