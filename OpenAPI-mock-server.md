@@ -7,7 +7,7 @@ the need for an additional application or storage (and therefore complexity).
 
 It is:
 * **lightweight**: it runs in a single (small) container
-* **fast**: it creates behind the scene a Go service with minimal footprint
+* **fast**: it creates behind the scenes a Go service with minimal footprint
 * **simple**: it displays the mock expectations in the index page
 
 ### Build
