@@ -1,4 +1,6 @@
 openapi: 3.0.0
+servers:
+  - url: https://test.myapi.com/v1
 info:
   title: Sample project
   version: '1.0'

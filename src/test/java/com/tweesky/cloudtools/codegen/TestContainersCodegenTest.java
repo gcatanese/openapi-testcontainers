@@ -25,6 +25,50 @@ import static org.junit.Assert.assertNotNull;
 
 public class TestContainersCodegenTest {
 
+
+    @Test
+    public void verifyRouters() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("test-containers")
+                .setInputSpec("src/test/resources/test-containers/specByContractId.yaml")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        DefaultGenerator generator = new DefaultGenerator();
+        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
+        files.forEach(File::deleteOnExit);
+
+        // check file exists
+        TestUtils.assertFileExists(Paths.get(output + "/api/routers.go"));
+        // check /index route
+        TestUtils.assertFileContains(Paths.get(output + "/api/routers.go"),
+                "{\n" +
+                        " \"Index\",\n " +
+                        " http.MethodGet,\n " +
+                        " \"/index/\",\n " +
+                        " Index,\n " +
+                        "}");
+        // check /openapi route
+        TestUtils.assertFileContains(Paths.get(output + "/api/routers.go"),
+                "{\n" +
+                        " \"OpenApi\",\n " +
+                        " http.MethodGet,\n " +
+                        " \"/openapi/\",\n " +
+                        " OpenApi,\n " +
+                        "}");
+        // check /users/:userId route
+        TestUtils.assertFileContains(Paths.get(output + "/api/routers.go"),
+                "{\n" +
+                        " \"GetUsersUserId\",\n " +
+                        " http.MethodGet,\n " +
+                        " \"/users/:userId\",\n " +
+                        " GetUsersUserId,\n " +
+                        "}");
+
+    }
+
     @Test
     public void generateByContractId() throws IOException {
         File output = Files.createTempDirectory("test").toFile();
