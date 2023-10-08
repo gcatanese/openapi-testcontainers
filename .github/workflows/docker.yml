@@ -1,11 +1,11 @@
-name: Push to Docker
+name: Build and push to Docker
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
@@ -15,8 +15,16 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml    
+    - name: Build jar
+      run: mvn -B package --file pom.xml
+    - name: Build mock server
+      run: docker build --build-arg openapifile=openapi/sample.yaml -t openapi-testcontainers .
+    - name: Run mock server
+      run: docker run --rm -d -p 8080:8080 --name openapi-testcontainers-app openapi-testcontainers
+    - name: Ping mock server URLs
+      uses: jtalk/url-health-check-action@v3
+      with:
+        url: http://localhost:8080/index|http://localhost:8080/openapi
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
       with:
