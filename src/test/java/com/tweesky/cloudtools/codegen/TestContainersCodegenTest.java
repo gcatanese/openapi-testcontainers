@@ -256,6 +256,7 @@ public class TestContainersCodegenTest {
     @Test
     public void convertLinkedHashMapToJson() {
         String EXPECTED = "{\n" +
+                "  \"country\" : \"NL\",\n" +
                 "  \"key\" : \"abcdefghijklmnopqrstuvwxyz\",\n" +
                 "  \"key2\" : 0,\n" +
                 "  \"key3\" : \"user@example.com\",\n" +
@@ -264,6 +265,7 @@ public class TestContainersCodegenTest {
 
         LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>(
                 ImmutableMap.of(
+                        "country", new StringSchema(),
                         "key", new StringSchema(),
                         "key2", new IntegerSchema(),
                         "key3", new EmailSchema(),

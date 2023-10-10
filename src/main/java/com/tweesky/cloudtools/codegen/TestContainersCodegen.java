@@ -666,7 +666,7 @@ public class TestContainersCodegen extends AbstractGoCodegen {
                         JSON_ESCAPE_DOUBLE_QUOTE + value + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof StringSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "abcdefghijklmnopqrstuvwxyz" + JSON_ESCAPE_DOUBLE_QUOTE;
+                        JSON_ESCAPE_DOUBLE_QUOTE + getSampleValue(key) + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof Integer) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         value;
@@ -726,6 +726,24 @@ public class TestContainersCodegen extends AbstractGoCodegen {
         ret = ret + JSON_ESCAPE_NEW_LINE + "}";
 
         return ret;
+    }
+
+    /**
+     * Get a 'reasonable' sample value for the given field
+     * @param key
+     * @return
+     */
+    String getSampleValue(String key) {
+        String value = "abcdefghijklmnopqrstuvwxyz";
+
+        if(key.equalsIgnoreCase("currency")) {
+            value = "EUR";
+        } else if(key.equalsIgnoreCase("country")) {
+            value = "NL";
+        } else if(key.equalsIgnoreCase("city")) {
+            value = "Amsterdam";
+        }
+        return value;
     }
 
     public String getInputSpecFilename(String inputSpec) {
