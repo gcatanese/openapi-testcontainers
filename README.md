@@ -4,6 +4,9 @@ Testcontainers module for OpenAPI: from an OpenAPI specification creates a [Test
 
 Write your tests against the API specifications (check the [sample](https://github.com/gcatanese/openapi-testcontainers-demo)).
 
+Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
+to understand the challenges and solutions of Contract Testing with the OpenAPI standard.
+
 ## Overview
 
 The OpenAPI Testcontainers extension allows developers to create on-the-fly a lightweight instance of the API consumed by the application.
@@ -59,10 +62,6 @@ The following strategies are applied (in order) to match requests with responses
 * **match by Example name**: find request and response examples that have the same name
 * **generate from Schema**: fallback strategy (when no matching is found): generate the response from the Schema and
 ensure every request has at least a response.
-
-Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
-to understand challenges and solutions of Contract Testing with the OpenAPI standard.
-
 
 
 ## Standalone mock
