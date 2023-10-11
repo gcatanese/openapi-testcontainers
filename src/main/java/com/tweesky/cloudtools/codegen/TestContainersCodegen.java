@@ -742,6 +742,18 @@ public class TestContainersCodegen extends AbstractGoCodegen {
             value = "NL";
         } else if(key.equalsIgnoreCase("city")) {
             value = "Amsterdam";
+        } else if(key.equalsIgnoreCase("nationality")) {
+            value = "NL";
+        } else if(key.equalsIgnoreCase("url")) {
+            value = "https://www.example.com";
+        } else if(key.equalsIgnoreCase("email")) {
+            value = "user@example.com";
+        } else if(key.equalsIgnoreCase("firstname")) {
+            value = "Alice";
+        } else if(key.equalsIgnoreCase("lastname")) {
+            value = "Cooper";
+        } else if(key.equalsIgnoreCase("iban")) {
+            value = "NL13TEST0123456789";
         }
         return value;
     }
