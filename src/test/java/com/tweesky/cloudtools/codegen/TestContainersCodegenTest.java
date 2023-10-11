@@ -257,7 +257,7 @@ public class TestContainersCodegenTest {
     public void convertLinkedHashMapToJson() {
         String EXPECTED = "{\n" +
                 "  \"country\" : \"NL\",\n" +
-                "  \"key\" : \"abcdefghijklmnopqrstuvwxyz\",\n" +
+                "  \"key\" : \"\",\n" +
                 "  \"key2\" : 0,\n" +
                 "  \"key3\" : \"user@example.com\",\n" +
                 "  \"key4\" : [ ]\n" +

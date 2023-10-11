@@ -734,19 +734,27 @@ public class TestContainersCodegen extends AbstractGoCodegen {
      * @return
      */
     String getSampleValue(String key) {
-        String value = "abcdefghijklmnopqrstuvwxyz";
+        String value = "";
 
         if(key.equalsIgnoreCase("currency")) {
             value = "EUR";
         } else if(key.equalsIgnoreCase("country")) {
             value = "NL";
+        } else if(key.equalsIgnoreCase("countryCode")) {
+            value = "NL";
+        } else if(key.equalsIgnoreCase("postalCode")) {
+            value = "11AA";
         } else if(key.equalsIgnoreCase("city")) {
             value = "Amsterdam";
+        } else if(key.equalsIgnoreCase("street")) {
+            value = "Park Av.";
         } else if(key.equalsIgnoreCase("nationality")) {
             value = "NL";
         } else if(key.equalsIgnoreCase("url")) {
             value = "https://www.example.com";
         } else if(key.equalsIgnoreCase("email")) {
+            value = "user@example.com";
+        } else if(key.endsWith("email") || key.endsWith("Email")) {
             value = "user@example.com";
         } else if(key.equalsIgnoreCase("firstname")) {
             value = "Alice";
@@ -754,6 +762,16 @@ public class TestContainersCodegen extends AbstractGoCodegen {
             value = "Cooper";
         } else if(key.equalsIgnoreCase("iban")) {
             value = "NL13TEST0123456789";
+        } else if(key.equalsIgnoreCase("telephonenumber")) {
+            value = "09 1234567890";
+        } else if(key.equalsIgnoreCase("os")) {
+            value = "n/a";
+        } else if(key.equalsIgnoreCase("locale")) {
+            value = "en";
+        } else if(key.endsWith("version") || key.endsWith("Version")) {
+            value = "1.0";
+        } else if(key.endsWith("reference") || key.endsWith("Reference")) {
+            value = "ref001";
         }
         return value;
     }
