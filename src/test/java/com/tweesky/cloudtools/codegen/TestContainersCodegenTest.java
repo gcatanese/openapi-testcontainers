@@ -42,6 +42,14 @@ public class TestContainersCodegenTest {
 
         // check file exists
         TestUtils.assertFileExists(Paths.get(output + "/api/routers.go"));
+        // check / route
+        TestUtils.assertFileContains(Paths.get(output + "/api/routers.go"),
+                "{\n" +
+                        " \"Home\",\n " +
+                        " http.MethodGet,\n " +
+                        " \"/\",\n " +
+                        " Index,\n " +
+                        "}");
         // check /index route
         TestUtils.assertFileContains(Paths.get(output + "/api/routers.go"),
                 "{\n" +

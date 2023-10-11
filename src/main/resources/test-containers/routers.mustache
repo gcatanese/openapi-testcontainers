@@ -71,6 +71,12 @@ func OpenApi(c *gin.Context) {
 
 var routes = Routes{
 	{
+		"Home",
+		http.MethodGet,
+		"/",
+		Index,
+	},
+	{
 		"Index",
 		http.MethodGet,
 		"/index/",
