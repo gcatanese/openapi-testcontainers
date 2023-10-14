@@ -3,7 +3,8 @@ package {{packageName}}
 
 {{#operations}}
 import (
-	"io/ioutil"
+	"io"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,8 @@ import (
 func {{nickname}}(c *gin.Context) {
 
 	// avoid package imported but not used error (ignore code)
-	_, _ = ioutil.ReadFile("noop")
+	_, _ = io.ReadAll(strings.NewReader("noop"))
+	_, _ = os.ReadFile("noop")
 	_ = strings.ToUpper("noop")
 
 {{#vendorExtensions.items}}
@@ -42,7 +44,7 @@ func {{nickname}}(c *gin.Context) {
 
     {{/-first}}
 	// input (payload request body)
-	body, _ = ioutil.ReadAll(c.Request.Body)
+	body, _ = io.ReadAll(c.Request.Body)
 
 	// expected output
 	expected = []byte(`{{{requestBody}}}`)
