@@ -66,4 +66,4 @@ ensure every request has at least a response.
 
 ## Standalone mock
 
-Run the mock server [standalone](OpenAPI-mock-server.md).
+Run the [standalone](OpenAPI-mock-server.md) OpenAPI Native mock server.
