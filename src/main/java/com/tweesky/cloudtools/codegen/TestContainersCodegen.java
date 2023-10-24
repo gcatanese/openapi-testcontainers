@@ -21,9 +21,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.tweesky.cloudtools.codegen.samples.*;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.media.*;
-import org.joda.time.DateTime;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.languages.AbstractGoCodegen;
 import org.openapitools.codegen.meta.GeneratorMetadata;
@@ -661,36 +661,24 @@ public class TestContainersCodegen extends AbstractGoCodegen {
             String key = mapElement.getKey();
             Object value = mapElement.getValue();
 
-            if (value instanceof String) {
+            if (value instanceof StringSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + value + JSON_ESCAPE_DOUBLE_QUOTE;
-            } else if (value instanceof StringSchema) {
-                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + getSampleValue(key) + JSON_ESCAPE_DOUBLE_QUOTE;
-            } else if (value instanceof Integer) {
-                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        value;
+                        JSON_ESCAPE_DOUBLE_QUOTE + new StringSample(value).getValue(key) + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof IntegerSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        "0";
+                        new IntegerSample(value).getValue(key);
             } else if (value instanceof EmailSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "user@example.com" + JSON_ESCAPE_DOUBLE_QUOTE;
-            } else if (value instanceof Date) {
-                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000" + JSON_ESCAPE_DOUBLE_QUOTE;
+                        JSON_ESCAPE_DOUBLE_QUOTE + new EmailSample(value).getValue(key) + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof DateSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000" + JSON_ESCAPE_DOUBLE_QUOTE;
-            } else if (value instanceof DateTime) {
-                ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000 h00:00:00" + JSON_ESCAPE_DOUBLE_QUOTE;
+                        JSON_ESCAPE_DOUBLE_QUOTE + new DateSample(value).getValue(key) + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof DateTimeSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        JSON_ESCAPE_DOUBLE_QUOTE + "01/01/2000 h00:00:00" + JSON_ESCAPE_DOUBLE_QUOTE;
+                        JSON_ESCAPE_DOUBLE_QUOTE + new DateTimeSample(value).getValue(key) + JSON_ESCAPE_DOUBLE_QUOTE;
             } else if (value instanceof BooleanSchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
-                        "true";
+                        new BooleanSample(value).getValue(key);
             } else if (value instanceof ArraySchema) {
                 ret = ret + JSON_ESCAPE_DOUBLE_QUOTE + key + JSON_ESCAPE_DOUBLE_QUOTE + ": " +
                         "[]";
@@ -726,54 +714,6 @@ public class TestContainersCodegen extends AbstractGoCodegen {
         ret = ret + JSON_ESCAPE_NEW_LINE + "}";
 
         return ret;
-    }
-
-    /**
-     * Get a 'reasonable' sample value for the given field
-     * @param key
-     * @return
-     */
-    String getSampleValue(String key) {
-        String value = "";
-
-        if(key.equalsIgnoreCase("currency")) {
-            value = "EUR";
-        } else if(key.equalsIgnoreCase("country")) {
-            value = "NL";
-        } else if(key.equalsIgnoreCase("countryCode")) {
-            value = "NL";
-        } else if(key.equalsIgnoreCase("postalCode")) {
-            value = "11AA";
-        } else if(key.equalsIgnoreCase("city")) {
-            value = "Amsterdam";
-        } else if(key.equalsIgnoreCase("street")) {
-            value = "Park Av.";
-        } else if(key.equalsIgnoreCase("nationality")) {
-            value = "NL";
-        } else if(key.equalsIgnoreCase("url")) {
-            value = "https://www.example.com";
-        } else if(key.equalsIgnoreCase("email")) {
-            value = "user@example.com";
-        } else if(key.endsWith("email") || key.endsWith("Email")) {
-            value = "user@example.com";
-        } else if(key.equalsIgnoreCase("firstname")) {
-            value = "Alice";
-        } else if(key.equalsIgnoreCase("lastname")) {
-            value = "Cooper";
-        } else if(key.equalsIgnoreCase("iban")) {
-            value = "NL13TEST0123456789";
-        } else if(key.equalsIgnoreCase("telephonenumber")) {
-            value = "09 1234567890";
-        } else if(key.equalsIgnoreCase("os")) {
-            value = "n/a";
-        } else if(key.equalsIgnoreCase("locale")) {
-            value = "en";
-        } else if(key.endsWith("version") || key.endsWith("Version")) {
-            value = "1.0";
-        } else if(key.endsWith("reference") || key.endsWith("Reference")) {
-            value = "ref001";
-        }
-        return value;
     }
 
     public String getInputSpecFilename(String inputSpec) {
