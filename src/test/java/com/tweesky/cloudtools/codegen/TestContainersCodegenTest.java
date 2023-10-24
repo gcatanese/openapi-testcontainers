@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestContainersCodegenTest {
 
@@ -147,6 +146,32 @@ public class TestContainersCodegenTest {
         // check generated email address
         TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
                 "\"user@example.com\"");
+
+    }
+
+    @Test
+    public void generateFromSchemaWithEnum() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("test-containers")
+                .setInputSpec("src/test/resources/test-containers/specWithEnum.yaml")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        DefaultGenerator generator = new DefaultGenerator();
+        List<File> files = generator.opts(configurator.toClientOptInput()).generate();
+        files.forEach(File::deleteOnExit);
+
+        TestUtils.assertFileContains(Paths.get(output + "/main.go"),
+                "package main");
+
+        log(output + "/api/api_basic.go");
+
+        TestUtils.assertFileExists(Paths.get(output + "/api/api_basic.go"));
+        // check country value from enum
+        TestUtils.assertFileContains(Paths.get(output + "/api/api_basic.go"),
+                "\"country\" : \"UK\"");
 
     }
 
@@ -291,7 +316,6 @@ public class TestContainersCodegenTest {
         String EXPECTED = "myopenapi.yaml";
         assertEquals(EXPECTED, new TestContainersCodegen().getInputSpecFilename(INPUT_SPEC));
     }
-
 
     private void log(String filename) throws IOException {
         System.out.println(new String(Files.readAllBytes(Paths.get(filename)), StandardCharsets.UTF_8));
