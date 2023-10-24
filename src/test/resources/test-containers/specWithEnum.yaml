@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: API spec
+  version: '1.0'
+paths:
+  '/users/{userId}':
+    get:
+      summary: Get User Info by Query Param
+      operationId: get-users-userId
+      description: Retrieve the information of the user with the matching user ID.
+      tags:
+        - basic
+      parameters:
+        - description: User identifier
+          name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+#            example: 888
+#          examples:
+#            valid:
+#              value: 1
+#              summary: success 200
+#            not found:
+#              value: 2
+#              summary: error 404
+
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User Not Found
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: X-API-Key
+      in: header
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      example:
+        id: 999
+        firstName: Alice9 schema example
+        lastName: Smith9
+        email: alice.smith@gmail.com
+        dateOfBirth: '1997-10-31'
+        emailVerified: true
+        createDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+          example: 0
+        firstName:
+          type: string
+          example: Alix
+        lastName:
+          type: string
+          example: Smith
+        country:
+          type: string
+          enum:
+            - UK
+            - NL
+            - US
+            - IT
+            - FR
+            - ES
+      required:
+        - id
+        - firstName
+        - lastName
+    Error:
+      title: Error object
+      type: object
+      description: 'An error'
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    Country:
+      type: string
+      enum:
+        - NL
+        - US
+        - IT
+        - FR
+        - ES
+tags:
+  - name: basic
+    description: Basic tag
