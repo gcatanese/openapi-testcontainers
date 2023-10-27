@@ -4,15 +4,17 @@ Testcontainers module for OpenAPI: from an OpenAPI specification creates a [Test
 
 Write your tests against the API specifications (check the [sample](https://github.com/gcatanese/openapi-testcontainers-demo)).
 
-Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
-to understand the challenges and solutions of Contract Testing with the OpenAPI standard.
-
 ## Overview
 
 The OpenAPI Testcontainers extension allows developers to create on-the-fly a lightweight instance of the API consumed by the application.
 The API container is loaded when the Junit tests start and can be used to mock the different endpoints and payloads.
 
-This extension leverages the [OpenAPI Native Mock Server](https://github.com/gcatanese/openapi-native-mock-server).
+This repository does not contain source code, but only a README on how to create and run TestContainers with an OpenAPI specification.  
+It integrates the [OpenAPI Native Mock Server](https://github.com/gcatanese/openapi-native-mock-server) to generate the mock server.
+
+Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
+to understand the challenges and solutions of Contract Testing with the OpenAPI standard.
+
 
 ## Usage
 
