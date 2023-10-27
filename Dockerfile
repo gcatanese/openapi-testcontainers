@@ -1,13 +1,13 @@
 # stage 0: generate mock server code
-FROM gcatanese/openapi-testcontainers
+FROM gcatanese/openapi-native-mock-server
 
 ARG openapifile=openapi/openapi.yaml
 ADD $openapifile /openapi/$openapifile
 
-RUN java -cp /openapi/bin/openapi-testcontainers.jar:/openapi/bin/openapi-generator-cli.jar \
-  org.openapitools.codegen.OpenAPIGenerator generate -g com.tweesky.cloudtools.codegen.TestContainersCodegen \
+RUN java -cp /openapi/bin/openapi-native-mock-server.jar:/openapi/bin/openapi-generator-cli.jar \
+  org.openapitools.codegen.OpenAPIGenerator generate -g com.tweesky.cloudtools.codegen.NativeMockServerCodegen \
    -i /openapi/$openapifile -o /openapi/go-server
-
+   
 # stage 1: build Go executable
 FROM golang:1.19-alpine3.15
 COPY --from=0 /openapi/go-server ./go-server

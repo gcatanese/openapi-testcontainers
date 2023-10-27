@@ -12,6 +12,7 @@ to understand the challenges and solutions of Contract Testing with the OpenAPI 
 The OpenAPI Testcontainers extension allows developers to create on-the-fly a lightweight instance of the API consumed by the application.
 The API container is loaded when the Junit tests start and can be used to mock the different endpoints and payloads.
 
+This extension leverages the [OpenAPI Native Mock Server](https://github.com/gcatanese/openapi-native-mock-server).
 
 ## Usage
 
@@ -49,21 +50,3 @@ Write your tests
 
 ```
 
-## How it works
-
-The module uses the [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) to genereate a lightweight 
-mock server based on the OpenAPI specification. The request and response examples are found and matched to define the 
-interactions (contract) between the consumer and the producer of the API.  
-
-The following strategies are applied (in order) to match requests with responses:
-* **match by Contract tag**: do requests and examples use the vendor extension `x-contract-id`? In this case match a request with a response example that has the same value
-* **match by Ref name**: match `$ref` request example with a corresponding `$ref` response example, for example 
-`create-users-example` would match `create-users-example-200` to define a successful `200` scenario
-* **match by Example name**: find request and response examples that have the same name
-* **generate from Schema**: fallback strategy (when no matching is found): generate the response from the Schema and
-ensure every request has at least a response.
-
-
-## Standalone mock
-
-Run the [standalone](OpenAPI-mock-server.md) OpenAPI Native mock server.
