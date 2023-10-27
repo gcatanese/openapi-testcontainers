@@ -1,8 +1,0 @@
-FROM bellsoft/liberica-openjdk-alpine-musl:11
-ADD openapi/cli/openapi-generator-cli.jar /openapi/bin/openapi-generator-cli.jar
-ADD target/openapi-testcontainers.jar /openapi/bin/openapi-testcontainers.jar
-
-ADD openapi/sample.yaml /openapi/sample.yaml
-
-
-
