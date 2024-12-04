@@ -14,7 +14,7 @@ The API container is loaded when the Junit tests start and can be used to mock t
 This repository does not contain source code, but only a README on how to create and run TestContainers with an OpenAPI specification.  
 The mock server generation is provided by the [OpenAPI Native Mock Server](https://github.com/gcatanese/openapi-native-mock-server).
 
-Check out the [Contract Testing with OpenAPI](https://medium.com/geekculture/contract-testing-with-openapi-42267098ddc7) article
+Check out the [Contract Testing with OpenAPI](https://beppecatanese.hashnode.dev/contract-testing-with-openapi) article
 to understand the challenges and solutions of Contract Testing with the OpenAPI standard.
 
 
